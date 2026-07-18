@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Search, LogOut, User, MessageCircle, Moon, Sun, Edit3, X, Smile, CheckCircle, Gem, Rocket, ShieldCheck, Heart, Crown } from 'lucide-react';
+import { Send, Search, LogOut, User, MessageCircle, Moon, Sun, Edit3, X, Smile, CheckCircle, Gem, Rocket, ShieldCheck, Heart, Crown, ArrowLeft } from 'lucide-react';
 import { io } from 'socket.io-client';
 import EmojiPicker from 'emoji-picker-react';
 import { useTheme } from '../context/ThemeContext';
@@ -23,6 +23,7 @@ const Chat = () => {
   const [editName, setEditName] = useState('');
   
   const [showEmoji, setShowEmoji] = useState(false);
+  const [showSidebarOnMobile, setShowSidebarOnMobile] = useState(true);
 
   const socketRef = useRef();
   const messagesEndRef = useRef(null);
@@ -198,7 +199,7 @@ const Chat = () => {
 
   return (
     <div className="chat-container">
-      <div className="sidebar glass-panel">
+      <div className={`sidebar glass-panel mobile-sidebar-${showSidebarOnMobile ? 'show' : 'hide'}`}>
         <div className="sidebar-header">
           <div 
             className="user-profile clickable" 
@@ -242,7 +243,7 @@ const Chat = () => {
                 <div 
                   key={contact.id} 
                   className={`contact-item ${activeContact?.id === contact.id ? 'active' : ''}`}
-                  onClick={() => { setActiveContact(contact); setSearchQuery(''); setSearchResults([]); }}
+                  onClick={() => { setActiveContact(contact); setSearchQuery(''); setSearchResults([]); setShowSidebarOnMobile(false); }}
                 >
                   <div className="avatar">
                     {contact.name?.charAt(0).toUpperCase()}
@@ -270,7 +271,7 @@ const Chat = () => {
                 <div 
                   key={contact.id} 
                   className={`contact-item ${activeContact?.id === contact.id ? 'active' : ''}`}
-                  onClick={() => setActiveContact(contact)}
+                  onClick={() => { setActiveContact(contact); setShowSidebarOnMobile(false); }}
                 >
                   <div className="avatar">
                     {contact.name?.charAt(0).toUpperCase()}
@@ -295,14 +296,23 @@ const Chat = () => {
         </div>
       </div>
 
-      <div className="chat-area glass-panel">
+      <div className={`chat-area glass-panel mobile-chat-${showSidebarOnMobile ? 'hide' : 'show'}`}>
         {activeContact ? (
           <>
             <div className="chat-header">
-              <div 
-                className="chat-header-info clickable" 
-                onClick={() => { setProfileView(activeContact); setShowProfileModal(true); }}
-              >
+              <div className="chat-header-info">
+                <button 
+                  className="icon-btn mobile-back-btn" 
+                  onClick={() => setShowSidebarOnMobile(true)}
+                  title="Назад"
+                >
+                  <ArrowLeft size={24} />
+                </button>
+                <div 
+                  className="clickable" 
+                  onClick={() => { setProfileView(activeContact); setShowProfileModal(true); }}
+                  style={{display: 'flex', alignItems: 'center', gap: '12px'}}
+                >
                 <div className="avatar">{activeContact.name?.charAt(0).toUpperCase()}</div>
                 <div>
                   <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: 0}}>
@@ -312,6 +322,7 @@ const Chat = () => {
                     {activeContact.username.toLowerCase() === 'zell' && <span className="admin-badge" style={{display: 'flex', alignItems: 'center'}}><Crown size={12} style={{marginRight: '4px'}} /> STAFF</span>}
                   </h3>
                   <span className="status">@{activeContact.username}</span>
+                </div>
                 </div>
               </div>
             </div>
