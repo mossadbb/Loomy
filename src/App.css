@@ -15,40 +15,7 @@
   box-shadow: var(--shadow-md);
 }
 
-.btn-primary {
-  background: var(--gradient-accent);
-  color: white;
-  padding: 12px 24px;
-  border-radius: var(--radius-full);
-  font-weight: 600;
-  font-size: 1rem;
-  transition: var(--transition-fast);
-  box-shadow: var(--shadow-sm);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
-}
-
-.btn-secondary {
-  background: transparent;
-  color: var(--color-text-primary);
-  border: 1px solid var(--border-color);
-  padding: 12px 24px;
-  border-radius: var(--radius-full);
-  font-weight: 500;
-  transition: var(--transition-fast);
-}
-
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.2);
-}
 
 h1, h2, h3, h4, h5, h6 {
   color: var(--color-text-primary);

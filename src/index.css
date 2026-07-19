@@ -1,23 +1,137 @@
-@import "tailwindcss";
+:root {
+  /* Typography */
+  --font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  
+  /* Color Palette - Strict Minimalist Dark Theme */
+  --color-bg-base: #000000;
+  --color-bg-surface: #0a0a0a;
+  --color-bg-surface-glass: #0a0a0a;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #888888;
+  --color-input-bg: #111111;
+  --color-hover-bg: #1a1a1a;
+  --color-active-bg: #222222;
+  --color-input-border-focus: #444444;
+  --color-scrollbar-thumb: #333333;
+  
+  /* Primary Accent - Stark White / Monochrome */
+  --color-accent-primary: #ffffff;
+  --color-accent-secondary: #eeeeee;
+  --gradient-accent: #ffffff;
+  
+  /* Borders and Effects */
+  --border-color: #222222;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-glow: none;
+  --glass-blur: none;
+  
+  /* Radii */
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
 
-/* Minimal custom global resets if any */
-@layer base {
-  body {
-    @apply bg-black text-white antialiased font-sans;
-  }
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
 }
 
-/* Custom scrollbar matching dark theme */
+body.light-theme {
+  --color-bg-base: #ffffff;
+  --color-bg-surface: #f5f5f5;
+  --color-bg-surface-glass: #f5f5f5;
+  --color-text-primary: #000000;
+  --color-text-secondary: #666666;
+  --color-input-bg: #ffffff;
+  --color-hover-bg: #eeeeee;
+  --color-active-bg: #dddddd;
+  --color-input-border-focus: #999999;
+  --color-scrollbar-thumb: #cccccc;
+  
+  --color-accent-primary: #000000;
+  --color-accent-secondary: #111111;
+  --gradient-accent: #000000;
+  
+  --border-color: #e5e5e5;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Background gradient blobs - REMOVED */
+.bg-blobs, .blob {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  font-family: var(--font-family);
+  border: none;
+  outline: none;
+}
+
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 4px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: var(--color-bg-base);
 }
 ::-webkit-scrollbar-thumb {
-  @apply bg-white/10 rounded-full;
+  background: var(--color-scrollbar-thumb);
 }
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-white/20;
+  background: var(--color-text-secondary);
+}
+
+/* Base App Layout */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Premium Buttons - Minimalist */
+.btn-primary {
+  background: #5865F2;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+.btn-primary:hover {
+  background: #4752C4;
+  color: #ffffff;
+}
+.btn-secondary {
+  background: #4e5058;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: var(--transition-fast);
+}
+.btn-secondary:hover {
+  background: #6d6f78;
 }
