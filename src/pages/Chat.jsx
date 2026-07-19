@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Send, Search, LogOut, User, MessageCircle, Moon, Sun, Edit3, X, Smile, CheckCircle, Gem, Rocket, ShieldCheck, Heart, Crown, ArrowLeft } from 'lucide-react';
+import { Send, Search, LogOut, User, Users, MessageCircle, Moon, Sun, Edit3, X, Smile, CheckCircle, Gem, Rocket, ShieldCheck, Heart, Crown, ArrowLeft, BarChart2, Clock, Plus, Eye } from 'lucide-react';
 import { io } from 'socket.io-client';
 import EmojiPicker from 'emoji-picker-react';
 import { useTheme } from '../context/ThemeContext';
@@ -24,6 +24,18 @@ const Chat = () => {
   
   const [showEmoji, setShowEmoji] = useState(false);
   const [showSidebarOnMobile, setShowSidebarOnMobile] = useState(true);
+  
+  const [showCreateGroupModal, setShowCreateGroupModal] = useState(false);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [selectedMembers, setSelectedMembers] = useState([]);
+
+  const [showCreatePollModal, setShowCreatePollModal] = useState(false);
+  const [pollQuestion, setPollQuestion] = useState('');
+  const [pollOptions, setPollOptions] = useState(['', '']);
+
+  const [isSecretMode, setIsSecretMode] = useState(false);
+  const [activeReactionMsgId, setActiveReactionMsgId] = useState(null);
+  const [revealedSecrets, setRevealedSecrets] = useState({}); // msgId -> boolean
 
   const socketRef = useRef();
   const messagesEndRef = useRef(null);
@@ -43,13 +55,8 @@ const Chat = () => {
     setEditBio(parsedUser.bio || '');
     setEditName(parsedUser.name || '');
 
-    // Connect to Socket
     socketRef.current = io('/', { path: '/socket.io' });
     socketRef.current.emit('register_user', parsedUser.id);
-
-    socketRef.current.on('receive_message', (msg) => {
-      setMessages(prev => [...prev, msg]);
-    });
 
     fetchContacts(parsedUser.id);
 
@@ -59,20 +66,56 @@ const Chat = () => {
   }, [navigate]);
 
   useEffect(() => {
+    if (!socketRef.current) return;
+    
+    const handleReceive = (msg) => {
+      setMessages(prev => {
+        if (!activeContact) return prev;
+        const isCurrentGroup = activeContact.isGroup && msg.groupId === activeContact.id;
+        const isCurrentDirect = !activeContact.isGroup && !msg.groupId && 
+          (msg.senderId === activeContact.id || msg.receiverId === activeContact.id || msg.senderId === user?.id);
+        
+        if (isCurrentGroup || isCurrentDirect) {
+          // Prevent duplicates
+          if (prev.some(m => m.id === msg.id)) return prev;
+          return [...prev, msg];
+        }
+        return prev;
+      });
+    };
+
+    socketRef.current.on('receive_message', handleReceive);
+    socketRef.current.on('message_updated', (updatedMsg) => {
+      setMessages(prev => prev.map(m => m.id === updatedMsg.id ? { ...m, metadata: updatedMsg.metadata } : m));
+    });
+    socketRef.current.on('message_deleted', (msgId) => {
+      setMessages(prev => prev.filter(m => m.id !== msgId));
+    });
+
+    return () => {
+      socketRef.current.off('receive_message', handleReceive);
+      socketRef.current.off('message_updated');
+      socketRef.current.off('message_deleted');
+    };
+  }, [activeContact, user]);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   useEffect(() => {
     if (activeContact && user) {
-      fetchMessages(user.id, activeContact.id);
+      fetchMessages(user.id, activeContact);
     }
   }, [activeContact, user]);
 
   const fetchContacts = async (currentUserId) => {
     try {
-      const res = await fetch(`/api/users/contacts/${currentUserId}`);
-      const data = await res.json();
-      setContacts(data);
+      const resUsers = await fetch(`/api/users/contacts/${currentUserId}`);
+      const usersData = await resUsers.json();
+      const resGroups = await fetch(`/api/groups/${currentUserId}`);
+      const groupsData = await resGroups.json();
+      setContacts([...groupsData, ...usersData]);
     } catch (e) {
       console.error(e);
     }
@@ -94,14 +137,17 @@ const Chat = () => {
     }
   };
 
-  const fetchMessages = async (userId, contactId) => {
+  const fetchMessages = async (userId, contact) => {
     try {
       const res = await fetch(`/api/messages/${userId}`);
       const data = await res.json();
-      const filtered = data.filter(
-        m => (m.senderId === userId && m.receiverId === contactId) ||
-             (m.senderId === contactId && m.receiverId === userId)
-      );
+      const filtered = data.filter(m => {
+        if (contact.isGroup) {
+          return m.groupId === contact.id;
+        } else {
+          return !m.groupId && ((m.senderId === userId && m.receiverId === contact.id) || (m.senderId === contact.id && m.receiverId === userId));
+        }
+      });
       setMessages(filtered);
     } catch (e) {
       console.error(e);
@@ -119,13 +165,66 @@ const Chat = () => {
     
     const newMsg = {
       senderId: user.id,
-      receiverId: activeContact.id,
+      receiverId: activeContact.isGroup ? null : activeContact.id,
+      groupId: activeContact.isGroup ? activeContact.id : null,
       text: messageText,
+      metadata: isSecretMode ? { type: 'secret', expires: 10 } : null
     };
     
     socketRef.current.emit('send_message', newMsg);
     setMessageText('');
     setShowEmoji(false);
+    setIsSecretMode(false);
+  };
+
+  const handleSendPoll = () => {
+    if (!pollQuestion.trim() || pollOptions.some(o => !o.trim())) return;
+    const newMsg = {
+      senderId: user.id,
+      receiverId: activeContact.isGroup ? null : activeContact.id,
+      groupId: activeContact.isGroup ? activeContact.id : null,
+      text: "📊 Опрос: " + pollQuestion,
+      metadata: {
+        type: 'poll',
+        question: pollQuestion,
+        options: pollOptions.map((opt, i) => ({ id: i, text: opt, votes: [] }))
+      }
+    };
+    socketRef.current.emit('send_message', newMsg);
+    setShowCreatePollModal(false);
+    setPollQuestion('');
+    setPollOptions(['', '']);
+  };
+
+  const handleVote = (msg, optionId) => {
+    const updatedMetadata = JSON.parse(JSON.stringify(msg.metadata));
+    updatedMetadata.options.forEach(opt => {
+      opt.votes = opt.votes.filter(id => id !== user.id); // remove existing vote
+      if (opt.id === optionId) opt.votes.push(user.id);
+    });
+    socketRef.current.emit('update_message', { id: msg.id, metadata: updatedMetadata });
+  };
+
+  const handleReact = (msg, emojiStr) => {
+    const updatedMetadata = msg.metadata ? JSON.parse(JSON.stringify(msg.metadata)) : {};
+    if (!updatedMetadata.reactions) updatedMetadata.reactions = {};
+    if (!updatedMetadata.reactions[emojiStr]) updatedMetadata.reactions[emojiStr] = [];
+    
+    if (!updatedMetadata.reactions[emojiStr].includes(user.id)) {
+      updatedMetadata.reactions[emojiStr].push(user.id);
+    } else {
+      updatedMetadata.reactions[emojiStr] = updatedMetadata.reactions[emojiStr].filter(id => id !== user.id);
+      if (updatedMetadata.reactions[emojiStr].length === 0) delete updatedMetadata.reactions[emojiStr];
+    }
+    socketRef.current.emit('update_message', { id: msg.id, metadata: updatedMetadata });
+    setActiveReactionMsgId(null);
+  };
+
+  const revealSecret = (msgId) => {
+    setRevealedSecrets(prev => ({...prev, [msgId]: true}));
+    setTimeout(() => {
+      socketRef.current.emit('delete_message', msgId);
+    }, 10000);
   };
 
   const saveProfile = async () => {
@@ -148,6 +247,23 @@ const Chat = () => {
 
   const onEmojiClick = (emojiData) => {
     setMessageText(prev => prev + emojiData.emoji);
+  };
+
+  const handleCreateGroup = async () => {
+    if (!newGroupName.trim() || selectedMembers.length === 0) return;
+    try {
+      const res = await fetch('/api/groups/create', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ name: newGroupName, ownerId: user.id, members: selectedMembers })
+      });
+      if (res.ok) {
+        setShowCreateGroupModal(false);
+        setNewGroupName('');
+        setSelectedMembers([]);
+        fetchContacts(user.id);
+      }
+    } catch(e) { console.error(e) }
   };
 
   const handleGrantAchievement = async (achievement) => {
@@ -215,6 +331,9 @@ const Chat = () => {
             </div>
           </div>
           <div className="header-actions">
+            <button onClick={() => setShowCreateGroupModal(true)} className="icon-btn" title="Создать группу">
+              <Users size={20} />
+            </button>
             <button onClick={toggleTheme} className="icon-btn" title="Сменить тему">
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </button>
@@ -274,7 +393,7 @@ const Chat = () => {
                   onClick={() => { setActiveContact(contact); setShowSidebarOnMobile(false); }}
                 >
                   <div className="avatar">
-                    {contact.name?.charAt(0).toUpperCase()}
+                    {contact.isGroup ? <Users size={20}/> : contact.name?.charAt(0).toUpperCase()}
                   </div>
                   <div className="contact-details">
                     <div className="contact-top">
@@ -313,7 +432,7 @@ const Chat = () => {
                   onClick={() => { setProfileView(activeContact); setShowProfileModal(true); }}
                   style={{display: 'flex', alignItems: 'center', gap: '12px'}}
                 >
-                <div className="avatar">{activeContact.name?.charAt(0).toUpperCase()}</div>
+                <div className="avatar">{activeContact.isGroup ? <Users size={24}/> : activeContact.name?.charAt(0).toUpperCase()}</div>
                 <div>
                   <h3 style={{display: 'flex', alignItems: 'center', gap: '8px', margin: 0}}>
                     {activeContact.id === 0 && <CheckCircle size={16} className="verified-badge" />}
@@ -328,27 +447,85 @@ const Chat = () => {
             </div>
 
             <div className="messages-list">
-              {messages.map(msg => (
+              {messages.map(msg => {
+                const isPoll = msg.metadata?.type === 'poll';
+                const isSecret = msg.metadata?.type === 'secret';
+                const reactions = msg.metadata?.reactions || {};
+                
+                return (
                 <div key={msg.id} className={`message-wrapper ${msg.senderId === user.id ? 'sent' : 'received'}`}>
-                  <div className="message-bubble">
-                    <p>{msg.text}</p>
+                  <div className="message-bubble" style={isSecret ? {background: 'rgba(239, 68, 68, 0.2)', border: '1px solid #ef4444'} : {}}>
+                    
+                    {isSecret ? (
+                      revealedSecrets[msg.id] ? (
+                        <p>{msg.text}</p>
+                      ) : (
+                        <div style={{display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer'}} onClick={() => revealSecret(msg.id)}>
+                          <Eye size={16} /> <span>Секретное сообщение (10 сек) - Нажми чтобы открыть</span>
+                        </div>
+                      )
+                    ) : isPoll ? (
+                      <div className="poll-container">
+                        <p style={{fontWeight: 'bold', marginBottom: '12px'}}>{msg.text}</p>
+                        {msg.metadata.options.map(opt => {
+                          const totalVotes = msg.metadata.options.reduce((sum, o) => sum + o.votes.length, 0);
+                          const percentage = totalVotes === 0 ? 0 : Math.round((opt.votes.length / totalVotes) * 100);
+                          const hasVoted = opt.votes.includes(user.id);
+                          return (
+                            <div key={opt.id} className="poll-option" onClick={() => handleVote(msg, opt.id)} style={{cursor: 'pointer', marginBottom: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', overflow: 'hidden', position: 'relative'}}>
+                              <div style={{position: 'absolute', top: 0, left: 0, bottom: 0, width: `${percentage}%`, background: hasVoted ? 'rgba(139, 92, 246, 0.4)' : 'rgba(255,255,255,0.1)', zIndex: 1, transition: 'width 0.3s ease'}}></div>
+                              <div style={{position: 'relative', zIndex: 2, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem'}}>
+                                <span>{opt.text}</span>
+                                <span>{percentage}%</span>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        <div style={{fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', marginTop: '8px', textAlign: 'right'}}>Всего голосов: {msg.metadata.options.reduce((sum, o) => sum + o.votes.length, 0)}</div>
+                      </div>
+                    ) : (
+                      <p>{msg.text}</p>
+                    )}
+                    
                     <span className="message-time">
                       {new Date(msg.timestamp || Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
+                    
+                    {/* Reactions Bar */}
+                    {Object.keys(reactions).length > 0 && (
+                      <div className="message-reactions" style={{display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap'}}>
+                        {Object.entries(reactions).map(([emoji, userIds]) => (
+                          <div key={emoji} onClick={() => handleReact(msg, emoji)} style={{background: userIds.includes(user.id) ? 'rgba(139, 92, 246, 0.3)' : 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '12px', fontSize: '0.8rem', cursor: 'pointer', border: userIds.includes(user.id) ? '1px solid var(--color-accent-primary)' : '1px solid transparent'}}>
+                            {emoji} {userIds.length}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
+                  
+                  <div className="reaction-trigger" onClick={() => setActiveReactionMsgId(activeReactionMsgId === msg.id ? null : msg.id)} style={{fontSize: '0.75rem', color: 'var(--color-text-secondary)', cursor: 'pointer', marginTop: '4px', alignSelf: msg.senderId === user.id ? 'flex-end' : 'flex-start', opacity: 0.7}}>
+                    Добавить реакцию
+                  </div>
+                  {activeReactionMsgId === msg.id && (
+                    <div style={{position: 'absolute', zIndex: 50, marginTop: '20px', alignSelf: msg.senderId === user.id ? 'flex-end' : 'flex-start'}}>
+                      <EmojiPicker onEmojiClick={(e) => handleReact(msg, e.emoji)} theme={isDark ? 'dark' : 'light'} width={280} height={350}/>
+                    </div>
+                  )}
                 </div>
-              ))}
+              )})}
               <div ref={messagesEndRef} />
             </div>
 
             <form onSubmit={handleSendMessage} className="message-input-area">
-              <div className="input-actions">
-                <button 
-                  type="button" 
-                  className="icon-btn emoji-btn" 
-                  onClick={() => setShowEmoji(!showEmoji)}
-                >
+              <div className="input-actions" style={{display: 'flex', gap: '4px'}}>
+                <button type="button" className="icon-btn emoji-btn" onClick={() => setShowEmoji(!showEmoji)} title="Эмодзи">
                   <Smile size={24} />
+                </button>
+                <button type="button" className="icon-btn emoji-btn" onClick={() => setShowCreatePollModal(true)} title="Опрос" disabled={activeContact.id === 0}>
+                  <BarChart2 size={24} />
+                </button>
+                <button type="button" className={`icon-btn emoji-btn ${isSecretMode ? 'active' : ''}`} onClick={() => setIsSecretMode(!isSecretMode)} style={{color: isSecretMode ? '#ef4444' : ''}} title="Секретное сообщение (10 сек)" disabled={activeContact.id === 0}>
+                  <Clock size={24} />
                 </button>
                 {showEmoji && (
                   <div className="emoji-picker-container">
@@ -362,6 +539,7 @@ const Chat = () => {
                 value={messageText}
                 onChange={(e) => setMessageText(e.target.value)}
                 disabled={activeContact.id === 0}
+                style={isSecretMode ? {border: '1px solid #ef4444', background: 'rgba(239, 68, 68, 0.1)'} : {}}
               />
               <button type="submit" className="send-btn" disabled={!messageText.trim() || activeContact.id === 0}>
                 <Send size={20} />
@@ -380,12 +558,18 @@ const Chat = () => {
       {showProfileModal && profileView && (
         <div className="modal-overlay" onClick={() => setShowProfileModal(false)}>
           <div className="profile-modal glass-panel" onClick={e => e.stopPropagation()}>
-            <button className="close-btn" onClick={() => setShowProfileModal(false)}><X size={24} /></button>
             
-            <div className="profile-avatar">
-              <User size={48} />
+            <div className={`profile-banner ${hasPremium(profileView) ? 'premium-banner' : ''}`}>
+              <button className="close-btn" onClick={() => setShowProfileModal(false)}><X size={24} /></button>
             </div>
             
+            <div className="profile-avatar-wrapper">
+              <div className={`profile-avatar ${hasPremium(profileView) ? 'premium-avatar-glow' : ''}`}>
+                <User size={48} />
+              </div>
+            </div>
+            
+            <div className="profile-content-scroll">
             {profileView.id === user.id ? (
               <div className="profile-edit">
                 <h2 style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>
@@ -447,9 +631,60 @@ const Chat = () => {
                 )}
               </div>
             )}
+            </div>
           </div>
         </div>
       )}
+      {showCreateGroupModal && (
+        <div className="modal-overlay" onClick={() => setShowCreateGroupModal(false)}>
+          <div className="profile-modal glass-panel" onClick={e => e.stopPropagation()} style={{padding: '32px', maxWidth: '400px'}}>
+            <button className="close-btn" onClick={() => setShowCreateGroupModal(false)}><X size={24} /></button>
+            <h2 style={{marginBottom: '24px'}}>Создать группу</h2>
+            <div className="form-group" style={{width: '100%', marginBottom: '16px'}}>
+              <label>Название группы</label>
+              <input type="text" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} placeholder="Моя супер группа" style={{width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
+            </div>
+            <div className="form-group" style={{width: '100%', marginBottom: '24px'}}>
+              <label>Участники (ID через запятую, временно для теста)</label>
+              <input type="text" onChange={e => setSelectedMembers(e.target.value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)))} placeholder="1, 2, 3" style={{width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
+            </div>
+            <button className="btn-primary" onClick={handleCreateGroup} style={{width: '100%'}}>Создать</button>
+          </div>
+        </div>
+      )}
+
+      {showCreatePollModal && (
+        <div className="modal-overlay" onClick={() => setShowCreatePollModal(false)}>
+          <div className="profile-modal glass-panel" onClick={e => e.stopPropagation()} style={{padding: '32px', maxWidth: '400px', display: 'block', margin: 'auto', alignSelf: 'center'}}>
+            <button className="close-btn" onClick={() => setShowCreatePollModal(false)}><X size={24} /></button>
+            <h2 style={{marginBottom: '24px'}}>Создать опрос</h2>
+            
+            <div className="form-group" style={{width: '100%', marginBottom: '16px'}}>
+              <label>Вопрос</label>
+              <input type="text" value={pollQuestion} onChange={e => setPollQuestion(e.target.value)} placeholder="Например: Как дела?" style={{width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
+            </div>
+            
+            <label style={{display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-secondary)'}}>Варианты ответа</label>
+            {pollOptions.map((opt, i) => (
+              <div key={i} style={{width: '100%', marginBottom: '12px', display: 'flex', gap: '8px'}}>
+                <input type="text" value={opt} onChange={e => { const newOpts = [...pollOptions]; newOpts[i] = e.target.value; setPollOptions(newOpts); }} placeholder={`Вариант ${i+1}`} style={{flex: 1, padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
+                {pollOptions.length > 2 && (
+                  <button className="icon-btn" onClick={() => { const newOpts = pollOptions.filter((_, idx) => idx !== i); setPollOptions(newOpts); }}><X size={20}/></button>
+                )}
+              </div>
+            ))}
+            
+            {pollOptions.length < 10 && (
+              <button className="btn-secondary" onClick={() => setPollOptions([...pollOptions, ''])} style={{width: '100%', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: 'rgba(255,255,255,0.05)'}}>
+                <Plus size={18}/> Добавить вариант
+              </button>
+            )}
+            
+            <button className="btn-primary" onClick={handleSendPoll} style={{width: '100%', padding: '14px', borderRadius: '8px'}}>Создать опрос</button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

@@ -40,13 +40,35 @@ db.serialize(() => {
   db.run(`ALTER TABLE users ADD COLUMN isAdmin BOOLEAN DEFAULT 0`, (err) => {});
   db.run(`ALTER TABLE users ADD COLUMN achievements TEXT DEFAULT '["beta"]'`, (err) => {});
 
+  // Add columns to messages table if they don't exist
+  db.run(`ALTER TABLE messages ADD COLUMN groupId INTEGER`, (err) => {});
+  db.run(`ALTER TABLE messages ADD COLUMN metadata TEXT`, (err) => {});
+
   db.run(`
     CREATE TABLE IF NOT EXISTS messages (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       senderId INTEGER,
       receiverId INTEGER,
+      groupId INTEGER,
       text TEXT,
+      metadata TEXT,
       timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS groups (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT,
+      ownerId INTEGER
+    )
+  `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS group_members (
+      groupId INTEGER,
+      userId INTEGER,
+      PRIMARY KEY (groupId, userId)
     )
   `);
 });
@@ -163,10 +185,52 @@ app.post('/api/admin/grant', (req, res) => {
 
 app.get('/api/messages/:userId', (req, res) => {
   const userId = req.params.userId;
-  // Get all messages where user is sender or receiver
-  db.all('SELECT * FROM messages WHERE senderId = ? OR receiverId = ? ORDER BY timestamp ASC', [userId, userId], (err, rows) => {
+  db.all('SELECT * FROM messages WHERE senderId = ? OR receiverId = ? OR groupId IN (SELECT groupId FROM group_members WHERE userId = ?) ORDER BY timestamp ASC', [userId, userId, userId], (err, rows) => {
     if (err) return res.status(500).json({ error: 'Database error' });
-    res.json(rows);
+    res.json(rows.map(row => ({
+      ...row,
+      metadata: row.metadata ? JSON.parse(row.metadata) : null
+    })));
+  });
+});
+
+app.post('/api/groups/create', (req, res) => {
+  const { name, ownerId, members } = req.body;
+  if (!name || !ownerId) return res.status(400).json({ error: 'Missing name or owner' });
+  
+  db.run('INSERT INTO groups (name, ownerId) VALUES (?, ?)', [name, ownerId], function(err) {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    const groupId = this.lastID;
+    
+    // Insert members
+    const allMembers = [...new Set([...members, ownerId])];
+    const stmt = db.prepare('INSERT INTO group_members (groupId, userId) VALUES (?, ?)');
+    allMembers.forEach(userId => stmt.run(groupId, userId));
+    stmt.finalize();
+    
+    res.json({ id: groupId, name, ownerId, isGroup: true, members: allMembers });
+  });
+});
+
+app.get('/api/groups/:userId', (req, res) => {
+  const userId = req.params.userId;
+  db.all(`
+    SELECT g.id, g.name, g.ownerId, 1 as isGroup, 
+           (SELECT json_group_array(userId) FROM group_members WHERE groupId = g.id) as members
+    FROM groups g 
+    JOIN group_members gm ON g.id = gm.groupId 
+    WHERE gm.userId = ?
+  `, [userId], (err, rows) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    res.json(rows.map(r => ({ ...r, members: JSON.parse(r.members || '[]'), username: r.name, bio: 'Групповой чат' })));
+  });
+});
+
+app.post('/api/groups/addMember', (req, res) => {
+  const { groupId, userId } = req.body;
+  db.run('INSERT OR IGNORE INTO group_members (groupId, userId) VALUES (?, ?)', [groupId, userId], (err) => {
+    if (err) return res.status(500).json({ error: 'Database error' });
+    res.json({ success: true });
   });
 });
 
@@ -177,21 +241,50 @@ io.on('connection', (socket) => {
   socket.on('register_user', (userId) => {
     connectedUsers.set(socket.id, userId);
     io.emit('user_online', userId);
+    
+    db.all('SELECT groupId FROM group_members WHERE userId = ?', [userId], (err, rows) => {
+      if (!err && rows) {
+        rows.forEach(r => socket.join(`group_${r.groupId}`));
+      }
+    });
   });
 
   socket.on('send_message', (data) => {
-    // data: { senderId, receiverId, text }
-    db.run('INSERT INTO messages (senderId, receiverId, text) VALUES (?, ?, ?)', [data.senderId, data.receiverId, data.text], function(err) {
+    db.run('INSERT INTO messages (senderId, receiverId, groupId, text, metadata) VALUES (?, ?, ?, ?, ?)', 
+      [data.senderId, data.receiverId || null, data.groupId || null, data.text, data.metadata ? JSON.stringify(data.metadata) : null], 
+      function(err) {
       if (!err) {
         const msg = {
           id: this.lastID,
           senderId: data.senderId,
           receiverId: data.receiverId,
+          groupId: data.groupId,
           text: data.text,
+          metadata: data.metadata,
           timestamp: new Date().toISOString()
         };
-        // Broadcast to everyone (in a real app, send only to receiver and sender)
-        io.emit('receive_message', msg);
+        if (data.groupId) {
+          io.to(`group_${data.groupId}`).emit('receive_message', msg);
+        } else {
+          io.emit('receive_message', msg);
+        }
+      }
+    });
+  });
+
+  socket.on('update_message', (data) => {
+    // data: { id, metadata }
+    db.run('UPDATE messages SET metadata = ? WHERE id = ?', [data.metadata ? JSON.stringify(data.metadata) : null, data.id], function(err) {
+      if (!err) {
+        io.emit('message_updated', data); // Broadcast update
+      }
+    });
+  });
+
+  socket.on('delete_message', (msgId) => {
+    db.run('DELETE FROM messages WHERE id = ?', [msgId], function(err) {
+      if (!err) {
+        io.emit('message_deleted', msgId);
       }
     });
   });
