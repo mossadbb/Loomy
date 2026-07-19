@@ -1,72 +1,93 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loomy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="landing.css">
+    <title>Loomy - Безопасный мессенджер</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+    </style>
 </head>
-<body>
-    <nav class="navbar">
-        <div class="nav-content">
-            <div class="logo">
-                <i data-lucide="message-square"></i> LOOMY
+<body class="bg-black text-white min-h-screen selection:bg-purple-500/30">
+    <nav class="w-full border-b border-white/10 bg-black/50 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2 font-bold text-xl tracking-tight">
+                <i data-lucide="message-square" class="w-6 h-6 text-purple-500"></i>
+                LOOMY
             </div>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#about">About</a>
+            <div class="hidden md:flex gap-8 text-sm font-medium text-gray-400">
+                <a href="#features" class="hover:text-white transition-colors">Возможности</a>
+                <a href="#security" class="hover:text-white transition-colors">Безопасность</a>
             </div>
-            <button class="nav-btn primary" onclick="window.location.href='/auth'">Enter App</button>
+            <button onclick="window.location.href='/auth'" class="text-sm font-medium hover:text-gray-300 transition-colors">
+                Войти
+            </button>
         </div>
     </nav>
 
-    <header class="hero">
-        <div class="hero-container">
-            <div class="hero-badge">Loomy 2.0.0</div>
-            <h1 class="hero-title">The Minimalist <br/> Communication Tool.</h1>
-            <p class="hero-description">
-                A stripped-down, high-performance messaging environment. No visual clutter. 
-                Just your team, your conversations, and the tools you need to communicate efficiently.
-            </p>
-            <div class="hero-actions">
-                <button class="btn-solid" onclick="window.location.href='/auth'">Get Started</button>
-                <button class="btn-outline" onclick="document.getElementById('features').scrollIntoView()">Read Docs</button>
-            </div>
+    <main class="max-w-4xl mx-auto px-6 pt-32 pb-20 text-center">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-white/10 bg-white/5 text-sm font-medium text-gray-300 mb-8">
+            <span class="flex h-2 w-2 rounded-full bg-purple-500"></span>
+            Loomy 2.0.0 is live
         </div>
-    </header>
+        
+        <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+            Общайтесь <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">свободно</span>.
+        </h1>
+        
+        <p class="text-lg md:text-xl text-gray-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            Откройте для себя Loomy — быстрый, бесплатный и безопасный мессенджер. Никаких установок, мгновенный доступ с любого устройства.
+        </p>
 
-    <section id="features" class="grid-section">
-        <div class="grid-container">
-            <div class="feature-card">
-                <div class="feature-icon"><i data-lucide="bar-chart-2"></i></div>
-                <h3>Polls & Decisions</h3>
-                <p>Native voting mechanisms integrated directly into the chat stream.</p>
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button onclick="window.location.href='/auth'" class="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-full hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 group">
+                Попробовать бесплатно
+                <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+            <button onclick="window.location.href='/auth'" class="w-full sm:w-auto px-8 py-4 bg-transparent border border-white/20 text-white font-semibold rounded-full hover:bg-white/5 transition-colors">
+                Уже есть аккаунт
+            </button>
+        </div>
+    </main>
+
+    <section id="features" class="max-w-7xl mx-auto px-6 py-24 border-t border-white/10">
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                <div class="w-12 h-12 rounded-lg bg-purple-500/20 flex items-center justify-center mb-6">
+                    <i data-lucide="bar-chart-2" class="text-purple-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Опросы</h3>
+                <p class="text-gray-400 text-sm">Встроенные механизмы голосования прямо в потоке чата.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon"><i data-lucide="shield"></i></div>
-                <h3>Secret Transmissions</h3>
-                <p>Ephemeral messages that self-destruct exactly 10 seconds after viewing.</p>
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                <div class="w-12 h-12 rounded-lg bg-red-500/20 flex items-center justify-center mb-6">
+                    <i data-lucide="shield" class="text-red-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Секретные чаты</h3>
+                <p class="text-gray-400 text-sm">Сообщения, которые уничтожаются через 10 секунд.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon"><i data-lucide="users"></i></div>
-                <h3>Group Architecture</h3>
-                <p>Create segmented channels for specific topics or teams with access control.</p>
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                <div class="w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center mb-6">
+                    <i data-lucide="users" class="text-blue-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Группы</h3>
+                <p class="text-gray-400 text-sm">Создавайте изолированные каналы для команд.</p>
             </div>
-
-            <div class="feature-card">
-                <div class="feature-icon"><i data-lucide="zap"></i></div>
-                <h3>Zero Latency</h3>
-                <p>WebSocket-powered real-time synchronization. No loading states.</p>
+            <div class="p-6 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors">
+                <div class="w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center mb-6">
+                    <i data-lucide="zap" class="text-green-400"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Zero Latency</h3>
+                <p class="text-gray-400 text-sm">Синхронизация в реальном времени на WebSocket.</p>
             </div>
         </div>
     </section>
 
-    <footer class="footer">
-        <p>&copy; 2026 Loomy System.</p>
+    <footer class="border-t border-white/10 py-12 text-center text-gray-500 text-sm">
+        <p>&copy; 2026 Loomy System. All rights reserved.</p>
     </footer>
 
     <script>
