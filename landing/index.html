@@ -3,107 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loomy | Premium Social Experience</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>Loomy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="landing.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <div class="aurora-bg">
-        <div class="aurora-blob a-1"></div>
-        <div class="aurora-blob a-2"></div>
-        <div class="aurora-blob a-3"></div>
-    </div>
-
     <nav class="navbar">
         <div class="nav-content">
             <div class="logo">
-                <i data-lucide="message-circle"></i> Loomy
+                <i data-lucide="message-square"></i> LOOMY
             </div>
             <div class="nav-links">
-                <a href="#features">Возможности</a>
-                <a href="#security">Безопасность</a>
+                <a href="#features">Features</a>
+                <a href="#about">About</a>
             </div>
-            <button class="nav-btn primary" onclick="window.location.href='/auth'">Открыть</button>
+            <button class="nav-btn primary" onclick="window.location.href='/auth'">Enter App</button>
         </div>
     </nav>
 
     <header class="hero">
-        <div class="hero-badge">✨ Loomy 2.0 Beta</div>
-        <h1 class="hero-title">Общение без <span class="highlight">границ</span></h1>
-        <p class="hero-description">
-            Премиальный мессенджер с акцентом на типографику и чистоту дизайна. 
-            Создавайте опросы, отправляйте секретные сообщения и управляйте группами в одном месте.
-        </p>
-        <div class="hero-actions">
-            <button class="btn-glow" onclick="window.location.href='/auth'">Начать использовать</button>
-            <button class="btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">Узнать больше</button>
+        <div class="hero-container">
+            <div class="hero-badge">Loomy 2.0.0</div>
+            <h1 class="hero-title">The Minimalist <br/> Communication Tool.</h1>
+            <p class="hero-description">
+                A stripped-down, high-performance messaging environment. No visual clutter. 
+                Just your team, your conversations, and the tools you need to communicate efficiently.
+            </p>
+            <div class="hero-actions">
+                <button class="btn-solid" onclick="window.location.href='/auth'">Get Started</button>
+                <button class="btn-outline" onclick="document.getElementById('features').scrollIntoView()">Read Docs</button>
+            </div>
         </div>
     </header>
 
-    <section id="features" class="bento-section">
-        <h2 class="section-title">Всё, что вам нужно</h2>
-        
-        <div class="bento-grid">
-            <div class="bento-card col-span-2">
-                <div class="bento-icon"><i data-lucide="bar-chart-2"></i></div>
-                <h3>Интерактивные опросы</h3>
-                <p>Узнайте мнение друзей в реальном времени. Создавайте опросы прямо в чате с красивой анимацией голосов.</p>
-                <div class="bento-visual">
-                    <div class="mock-poll">
-                        <div class="mock-poll-title">Куда поедем?</div>
-                        <div class="mock-poll-option">
-                            <span>Горы</span>
-                            <div class="mock-progress p-70"></div>
-                        </div>
-                        <div class="mock-poll-option">
-                            <span>Море</span>
-                            <div class="mock-progress p-30"></div>
-                        </div>
-                    </div>
-                </div>
+    <section id="features" class="grid-section">
+        <div class="grid-container">
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="bar-chart-2"></i></div>
+                <h3>Polls & Decisions</h3>
+                <p>Native voting mechanisms integrated directly into the chat stream.</p>
             </div>
 
-            <div class="bento-card">
-                <div class="bento-icon text-red"><i data-lucide="clock"></i></div>
-                <h3>Секретные сообщения</h3>
-                <p>Отправляйте сообщения, которые автоматически исчезнут через 10 секунд после прочтения.</p>
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="shield"></i></div>
+                <h3>Secret Transmissions</h3>
+                <p>Ephemeral messages that self-destruct exactly 10 seconds after viewing.</p>
             </div>
 
-            <div class="bento-card">
-                <div class="bento-icon text-blue"><i data-lucide="users"></i></div>
-                <h3>Групповые чаты</h3>
-                <p>Создавайте пространства для друзей и коллег, управляйте участниками и делитесь файлами.</p>
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="users"></i></div>
+                <h3>Group Architecture</h3>
+                <p>Create segmented channels for specific topics or teams with access control.</p>
             </div>
 
-            <div class="bento-card col-span-2">
-                <div class="bento-icon text-yellow"><i data-lucide="award"></i></div>
-                <h3>Система достижений</h3>
-                <p>Получайте уникальные бейджи за активность. Спонсоры и Premium пользователи получают эксклюзивные стили профиля.</p>
+            <div class="feature-card">
+                <div class="feature-icon"><i data-lucide="zap"></i></div>
+                <h3>Zero Latency</h3>
+                <p>WebSocket-powered real-time synchronization. No loading states.</p>
             </div>
         </div>
     </section>
 
     <footer class="footer">
-        <p>&copy; 2026 Loomy. Все права защищены.</p>
+        <p>&copy; 2026 Loomy System.</p>
     </footer>
 
     <script>
         lucide.createIcons();
-        
-        // Scroll reveal animation
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, { threshold: 0.1 });
-
-        document.querySelectorAll('.bento-card, .hero, .section-title').forEach((el) => {
-            el.classList.add('fade-up');
-            observer.observe(el);
-        });
     </script>
 </body>
 </html>
