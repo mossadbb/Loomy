@@ -67,7 +67,7 @@
 }
 
 .form-group input {
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--color-input-bg);
   border: 1px solid var(--border-color);
   padding: 14px 16px;
   border-radius: var(--radius-md);

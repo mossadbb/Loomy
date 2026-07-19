@@ -472,7 +472,7 @@ const Chat = () => {
                           const percentage = totalVotes === 0 ? 0 : Math.round((opt.votes.length / totalVotes) * 100);
                           const hasVoted = opt.votes.includes(user.id);
                           return (
-                            <div key={opt.id} className="poll-option" onClick={() => handleVote(msg, opt.id)} style={{cursor: 'pointer', marginBottom: '8px', background: 'rgba(0,0,0,0.2)', borderRadius: '4px', overflow: 'hidden', position: 'relative'}}>
+                            <div key={opt.id} className="poll-option" onClick={() => handleVote(msg, opt.id)} style={{cursor: 'pointer', marginBottom: '8px', background: 'var(--color-input-bg)', borderRadius: '4px', overflow: 'hidden', position: 'relative'}}>
                               <div style={{position: 'absolute', top: 0, left: 0, bottom: 0, width: `${percentage}%`, background: hasVoted ? 'rgba(139, 92, 246, 0.4)' : 'rgba(255,255,255,0.1)', zIndex: 1, transition: 'width 0.3s ease'}}></div>
                               <div style={{position: 'relative', zIndex: 2, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem'}}>
                                 <span>{opt.text}</span>
@@ -495,7 +495,7 @@ const Chat = () => {
                     {Object.keys(reactions).length > 0 && (
                       <div className="message-reactions" style={{display: 'flex', gap: '4px', marginTop: '8px', flexWrap: 'wrap'}}>
                         {Object.entries(reactions).map(([emoji, userIds]) => (
-                          <div key={emoji} onClick={() => handleReact(msg, emoji)} style={{background: userIds.includes(user.id) ? 'rgba(139, 92, 246, 0.3)' : 'rgba(0,0,0,0.3)', padding: '2px 6px', borderRadius: '12px', fontSize: '0.8rem', cursor: 'pointer', border: userIds.includes(user.id) ? '1px solid var(--color-accent-primary)' : '1px solid transparent'}}>
+                          <div key={emoji} onClick={() => handleReact(msg, emoji)} style={{background: userIds.includes(user.id) ? 'rgba(139, 92, 246, 0.3)' : 'var(--color-hover-bg)', padding: '2px 6px', borderRadius: '12px', fontSize: '0.8rem', cursor: 'pointer', border: userIds.includes(user.id) ? '1px solid var(--color-accent-primary)' : '1px solid transparent', color: 'var(--color-text-primary)'}}>
                             {emoji} {userIds.length}
                           </div>
                         ))}
@@ -642,11 +642,11 @@ const Chat = () => {
             <h2 style={{marginBottom: '24px'}}>Создать группу</h2>
             <div className="form-group" style={{width: '100%', marginBottom: '16px'}}>
               <label>Название группы</label>
-              <input type="text" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} placeholder="Моя супер группа" style={{width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
+              <input type="text" value={newGroupName} onChange={e => setNewGroupName(e.target.value)} placeholder="Моя супер группа" style={{width: '100%', padding: '12px', background: 'var(--color-input-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
             </div>
             <div className="form-group" style={{width: '100%', marginBottom: '24px'}}>
               <label>Участники (ID через запятую, временно для теста)</label>
-              <input type="text" onChange={e => setSelectedMembers(e.target.value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)))} placeholder="1, 2, 3" style={{width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
+              <input type="text" onChange={e => setSelectedMembers(e.target.value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)))} placeholder="1, 2, 3" style={{width: '100%', padding: '12px', background: 'var(--color-input-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
             </div>
             <button className="btn-primary" onClick={handleCreateGroup} style={{width: '100%'}}>Создать</button>
           </div>
@@ -661,13 +661,13 @@ const Chat = () => {
             
             <div className="form-group" style={{width: '100%', marginBottom: '16px'}}>
               <label>Вопрос</label>
-              <input type="text" value={pollQuestion} onChange={e => setPollQuestion(e.target.value)} placeholder="Например: Как дела?" style={{width: '100%', padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
+              <input type="text" value={pollQuestion} onChange={e => setPollQuestion(e.target.value)} placeholder="Например: Как дела?" style={{width: '100%', padding: '12px', background: 'var(--color-input-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
             </div>
             
             <label style={{display: 'block', marginBottom: '8px', fontSize: '0.875rem', fontWeight: 500, color: 'var(--color-text-secondary)'}}>Варианты ответа</label>
             {pollOptions.map((opt, i) => (
               <div key={i} style={{width: '100%', marginBottom: '12px', display: 'flex', gap: '8px'}}>
-                <input type="text" value={opt} onChange={e => { const newOpts = [...pollOptions]; newOpts[i] = e.target.value; setPollOptions(newOpts); }} placeholder={`Вариант ${i+1}`} style={{flex: 1, padding: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
+                <input type="text" value={opt} onChange={e => { const newOpts = [...pollOptions]; newOpts[i] = e.target.value; setPollOptions(newOpts); }} placeholder={`Вариант ${i+1}`} style={{flex: 1, padding: '12px', background: 'var(--color-input-bg)', border: '1px solid var(--border-color)', borderRadius: '8px', color: 'var(--color-text-primary)'}}/>
                 {pollOptions.length > 2 && (
                   <button className="icon-btn" onClick={() => { const newOpts = pollOptions.filter((_, idx) => idx !== i); setPollOptions(newOpts); }}><X size={20}/></button>
                 )}
@@ -675,7 +675,7 @@ const Chat = () => {
             ))}
             
             {pollOptions.length < 10 && (
-              <button className="btn-secondary" onClick={() => setPollOptions([...pollOptions, ''])} style={{width: '100%', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: 'rgba(255,255,255,0.05)'}}>
+              <button className="btn-secondary" onClick={() => setPollOptions([...pollOptions, ''])} style={{width: '100%', marginBottom: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px', background: 'var(--color-hover-bg)'}}>
                 <Plus size={18}/> Добавить вариант
               </button>
             )}

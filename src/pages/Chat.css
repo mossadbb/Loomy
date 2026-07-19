@@ -67,7 +67,7 @@
 }
 
 .icon-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-hover-bg);
   color: var(--color-text-primary);
 }
 
@@ -86,7 +86,7 @@
 
 .search-bar input {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--color-input-bg);
   border: 1px solid var(--border-color);
   padding: 10px 10px 10px 40px;
   border-radius: var(--radius-full);
@@ -114,11 +114,11 @@
 }
 
 .contact-item:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--color-hover-bg);
 }
 
 .contact-item.active {
-  background: rgba(139, 92, 246, 0.1);
+  background: var(--color-active-bg);
   border-left-color: var(--color-accent-primary);
 }
 
@@ -246,7 +246,7 @@
 }
 
 .message-wrapper.received .message-bubble {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-hover-bg);
   border-bottom-left-radius: 4px;
 }
 
@@ -271,7 +271,7 @@
 
 .message-input-area input {
   flex: 1;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--color-input-bg);
   border: 1px solid var(--border-color);
   padding: 14px 20px;
   border-radius: var(--radius-full);
@@ -282,7 +282,7 @@
 
 .message-input-area input:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.3);
+  border-color: var(--color-input-border-focus);
 }
 
 .send-btn {
@@ -303,7 +303,7 @@
 }
 
 .send-btn:disabled {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--color-hover-bg);
   color: rgba(255, 255, 255, 0.3);
   cursor: not-allowed;
 }
@@ -318,7 +318,7 @@
 }
 
 .empty-icon {
-  color: rgba(255, 255, 255, 0.1);
+  color: var(--color-hover-bg);
   margin-bottom: 24px;
 }
 
@@ -554,7 +554,7 @@
 .profile-edit .form-group input,
 .profile-edit .form-group textarea {
   width: 100%;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--color-input-bg);
   border: 1px solid var(--border-color);
   padding: 12px;
   border-radius: var(--radius-md);
@@ -574,7 +574,7 @@
 }
 
 .profile-bio {
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--color-hover-bg);
   padding: 16px;
   border-radius: var(--radius-md);
   width: 100%;
@@ -609,7 +609,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(255, 215, 0, 0.1);
+  background: var(--color-hover-bg);
   border: 1px solid rgba(255, 215, 0, 0.3);
   padding: 6px 12px;
   border-radius: var(--radius-full);
