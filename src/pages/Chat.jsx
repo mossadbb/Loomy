@@ -379,7 +379,7 @@ const Chat = () => {
                       <h4 className="font-medium text-sm truncate">{contact.name}</h4>
                       {contact.id === 0 && <CheckCircle size={14} className="text-green-500" title="System" />}
                       {hasPremium(contact) && <Gem size={14} className="text-purple-400" title="Premium" />}
-                      {contact.username.toLowerCase() === 'zell' && <Crown size={12} className="text-red-500" title="Staff" />}
+                      {contact.username?.toLowerCase() === 'zell' && <Crown size={12} className="text-red-500" title="Staff" />}
                     </div>
                     <p className="text-xs text-gray-500 truncate">@{contact.username}</p>
                   </div>
@@ -403,7 +403,7 @@ const Chat = () => {
                       <h4 className="font-medium text-sm truncate">{contact.name}</h4>
                       {contact.id === 0 && <CheckCircle size={14} className="text-green-500" title="System" />}
                       {hasPremium(contact) && <Gem size={14} className="text-purple-400" title="Premium" />}
-                      {contact.username.toLowerCase() === 'zell' && <Crown size={12} className="text-red-500" title="Staff" />}
+                      {contact.username?.toLowerCase() === 'zell' && <Crown size={12} className="text-red-500" title="Staff" />}
                     </div>
                     <p className="text-xs text-gray-500 truncate">@{contact.username}</p>
                   </div>
@@ -439,7 +439,7 @@ const Chat = () => {
                     {activeContact.id === 0 && <CheckCircle size={14} className="text-green-500" />}
                     {activeContact.name}
                     {hasPremium(activeContact) && <Gem size={14} className="text-purple-400" />}
-                    {activeContact.username.toLowerCase() === 'zell' && <Crown size={12} className="text-red-500" />}
+                    {activeContact.username?.toLowerCase() === 'zell' && <Crown size={12} className="text-red-500" />}
                   </h3>
                   <span className="text-xs text-gray-500">@{activeContact.username}</span>
                 </div>
@@ -635,7 +635,7 @@ const Chat = () => {
                     <label className="text-xs font-semibold text-gray-400 uppercase block mb-2">Значки</label>
                     <div className="flex flex-wrap gap-2">
                       {renderAchievements(user.achievements)}
-                      {user.username.toLowerCase() === 'zell' && <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-xs font-medium text-red-500"><Crown size={14} /> Staff</div>}
+                      {user.username?.toLowerCase() === 'zell' && <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-red-500/10 border border-red-500/20 text-xs font-medium text-red-500"><Crown size={14} /> Staff</div>}
                     </div>
                   </div>
 
@@ -651,7 +651,7 @@ const Chat = () => {
                       {profileView.name}
                       {profileView.id === 0 && <CheckCircle size={18} className="text-green-500" />}
                       {hasPremium(profileView) && <Gem size={18} className="text-purple-400" />}
-                      {profileView.username.toLowerCase() === 'zell' && <Crown size={18} className="text-red-500" />}
+                      {profileView.username?.toLowerCase() === 'zell' && <Crown size={18} className="text-red-500" />}
                     </h2>
                     <p className="text-sm text-gray-400">@{profileView.username}</p>
                   </div>
@@ -674,7 +674,7 @@ const Chat = () => {
                     </button>
                   </div>
 
-                  {user.username.toLowerCase() === 'zell' && profileView.id !== 0 && (
+                  {user.username?.toLowerCase() === 'zell' && profileView.id !== 0 && (
                     <div className="pt-4 border-t border-white/10">
                       <label className="text-xs font-semibold text-red-400 uppercase block mb-2">Админ-панель</label>
                       <div className="flex gap-2">
