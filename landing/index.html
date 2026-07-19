@@ -1,296 +1,109 @@
 <!DOCTYPE html>
-<html lang="ru" class="dark">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Loomy — мессенджер нового поколения с групповыми чатами, опросами, реакциями и исчезающими сообщениями.">
-    <title>Loomy — Мессенджер нового поколения</title>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind Play CDN for Standalone Landing -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        display: ['"Space Grotesk"', 'sans-serif'],
-                        body: ['"DM Sans"', 'sans-serif'],
-                    },
-                    colors: {
-                        deep: '#050505',
-                        surface: '#0a0a0c',
-                        elevated: '#121214',
-                        accent: {
-                            DEFAULT: '#7C3AED',
-                            hover: '#8B5CF6',
-                            glow: 'rgba(124, 58, 237, 0.2)'
-                        }
-                    },
-                    animation: {
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'float': 'float 5s ease-in-out infinite alternate',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%': { transform: 'translateY(0)' },
-                            '100%': { transform: 'translateY(-10px)' },
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style type="text/tailwindcss">
-        @layer utilities {
-            .glass-panel {
-                @apply bg-white/5 backdrop-blur-xl border border-white/10;
-            }
-            .text-gradient {
-                @apply bg-gradient-to-br from-white to-zinc-400 bg-clip-text text-transparent;
-            }
-            .text-accent-gradient {
-                @apply bg-gradient-to-br from-purple-400 to-accent bg-clip-text text-transparent;
-            }
-        }
-        
-        body {
-            background-color: #050505;
-            background-image: 
-                radial-gradient(circle at 15% 50%, rgba(124, 58, 237, 0.08), transparent 30%),
-                radial-gradient(circle at 85% 30%, rgba(124, 58, 237, 0.12), transparent 30%);
-            background-attachment: fixed;
-        }
-
-        .reveal {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
-        }
-        .reveal.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .stagger-1 { transition-delay: 100ms; }
-        .stagger-2 { transition-delay: 200ms; }
-        .stagger-3 { transition-delay: 300ms; }
-        
-        /* Interactive grid effect */
-        .bento-card::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255,255,255,0.06), transparent 40%);
-            z-index: 0;
-            opacity: 0;
-            transition: opacity 0.5s;
-        }
-        .bento-card:hover::before { opacity: 1; }
-    </style>
+    <title>Loomy | Premium Social Experience</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="font-body text-white antialiased overflow-x-hidden selection:bg-accent selection:text-white">
+<body>
+    <div class="aurora-bg">
+        <div class="aurora-blob a-1"></div>
+        <div class="aurora-blob a-2"></div>
+        <div class="aurora-blob a-3"></div>
+    </div>
 
-    <!-- NAVBAR -->
-    <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 py-6 transition-all duration-300">
-        <div class="max-w-[1200px] mx-auto px-6 flex justify-between items-center">
-            <a href="#" class="font-display font-bold text-2xl flex items-center gap-3 tracking-tight">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-accent"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                Loomy
-            </a>
-            <a href="https://loomy-5kmu.onrender.com" class="glass-panel px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-white/10 hover:border-white/20 transition-all hover:-translate-y-0.5" target="_blank">
-                Открыть Web
-            </a>
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="logo">
+                <i data-lucide="message-circle"></i> Loomy
+            </div>
+            <div class="nav-links">
+                <a href="#features">Возможности</a>
+                <a href="#security">Безопасность</a>
+            </div>
+            <button class="nav-btn primary" onclick="window.location.href='/auth'">Открыть</button>
         </div>
     </nav>
 
-    <!-- HERO -->
-    <section class="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-32 pb-20 relative">
-        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 w-px h-24 bg-gradient-to-b from-white/10 to-transparent"></div>
-        
-        <div class="glass-panel px-4 py-1.5 rounded-full flex items-center gap-2 mb-8 reveal text-sm text-zinc-400 font-medium">
-            <div class="w-2 h-2 rounded-full bg-accent shadow-[0_0_12px_rgba(124,58,237,0.8)] animate-pulse-slow"></div>
-            Доступно онлайн
-        </div>
-        
-        <h1 class="font-display font-bold text-[clamp(3rem,8vw,6.5rem)] leading-[1.1] tracking-tight max-w-[900px] mb-6 reveal stagger-1">
-            <span class="text-gradient">Мессенджер</span><br>без визуального шума.
-        </h1>
-        
-        <p class="text-[clamp(1.1rem,2vw,1.35rem)] text-zinc-400 max-w-[600px] mb-12 leading-relaxed reveal stagger-2">
-            Общение, опросы и исчезающие сообщения в едином минималистичном интерфейсе. Создано для тех, кто ценит эстетику и приватность.
+    <header class="hero">
+        <div class="hero-badge">✨ Loomy 2.0 Beta</div>
+        <h1 class="hero-title">Общение без <span class="highlight">границ</span></h1>
+        <p class="hero-description">
+            Премиальный мессенджер с акцентом на типографику и чистоту дизайна. 
+            Создавайте опросы, отправляйте секретные сообщения и управляйте группами в одном месте.
         </p>
+        <div class="hero-actions">
+            <button class="btn-glow" onclick="window.location.href='/auth'">Начать использовать</button>
+            <button class="btn-outline" onclick="document.getElementById('features').scrollIntoView({behavior: 'smooth'})">Узнать больше</button>
+        </div>
+    </header>
+
+    <section id="features" class="bento-section">
+        <h2 class="section-title">Всё, что вам нужно</h2>
         
-        <div class="flex flex-wrap gap-4 justify-center reveal stagger-3">
-            <a href="https://loomy-5kmu.onrender.com" class="bg-accent hover:bg-accent-hover text-white px-8 py-4 rounded-full font-display font-semibold text-lg flex items-center gap-3 transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(124,58,237,0.4)] shadow-[0_0_0_1px_rgba(255,255,255,0.1)_inset]" target="_blank">
-                Начать общение
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-        </div>
-    </section>
-
-    <!-- BENTO GRID -->
-    <section class="py-32 relative">
-        <div class="max-w-[1200px] mx-auto px-6">
-            <div class="text-center mb-20 reveal">
-                <h2 class="font-display font-bold text-[clamp(2.5rem,5vw,4rem)] tracking-tight mb-4 text-gradient">Создан для диалога.</h2>
-                <p class="text-lg text-zinc-400 max-w-[500px] mx-auto">Никаких лишних элементов. Только чистый функционал.</p>
+        <div class="bento-grid">
+            <div class="bento-card col-span-2">
+                <div class="bento-icon"><i data-lucide="bar-chart-2"></i></div>
+                <h3>Интерактивные опросы</h3>
+                <p>Узнайте мнение друзей в реальном времени. Создавайте опросы прямо в чате с красивой анимацией голосов.</p>
+                <div class="bento-visual">
+                    <div class="mock-poll">
+                        <div class="mock-poll-title">Куда поедем?</div>
+                        <div class="mock-poll-option">
+                            <span>Горы</span>
+                            <div class="mock-progress p-70"></div>
+                        </div>
+                        <div class="mock-poll-option">
+                            <span>Море</span>
+                            <div class="mock-progress p-30"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 max-w-[1000px] mx-auto">
-                
-                <!-- Card 1: Groups (Large) -->
-                <div class="bento-card md:col-span-8 bg-surface border border-white/5 rounded-3xl p-10 flex flex-col relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-white/10 hover:shadow-2xl hover:shadow-black/50 reveal group">
-                    <div class="relative z-10 flex flex-col h-full">
-                        <div class="w-14 h-14 rounded-2xl bg-elevated border border-white/10 flex items-center justify-center mb-6 text-white group-hover:scale-110 transition-transform">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        </div>
-                        <h3 class="font-display font-bold text-2xl mb-3">Группы без границ</h3>
-                        <p class="text-zinc-400 text-lg mb-8">Создавайте пространства для команд, друзей или комьюнити. Мгновенная синхронизация.</p>
-                        
-                        <div class="mt-auto bg-elevated border border-white/10 rounded-2xl p-4 flex flex-col gap-3">
-                            <div class="flex justify-between items-center border-b border-white/5 pb-3 mb-2">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-accent"></div>
-                                    <div>
-                                        <div class="font-semibold text-sm">Design Team</div>
-                                        <div class="text-xs text-zinc-500">12 участников</div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="bg-surface px-4 py-3 rounded-2xl rounded-tl-sm border border-white/5 text-sm w-fit">Ребят, как вам новый концепт?</div>
-                            <div class="bg-accent text-white px-4 py-3 rounded-2xl rounded-tr-sm self-end relative max-w-[80%] text-sm">
-                                Выглядит отлично. Утверждаем.
-                                <div class="absolute -bottom-3 -left-4 bg-elevated border border-white/10 rounded-full px-2 py-0.5 text-xs flex items-center gap-1 shadow-lg">🔥 4</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Card 2: Secrets (Medium) -->
-                <div class="bento-card md:col-span-4 bg-surface border border-white/5 rounded-3xl p-10 flex flex-col relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-white/10 hover:shadow-2xl reveal stagger-1 group">
-                    <div class="relative z-10 flex flex-col h-full">
-                        <div class="w-14 h-14 rounded-2xl bg-elevated border border-white/10 flex items-center justify-center mb-6 text-rose-500 group-hover:scale-110 transition-transform">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                        </div>
-                        <h3 class="font-display font-bold text-2xl mb-3">Секретные чаты</h3>
-                        <p class="text-zinc-400 text-lg mb-8">Сообщения исчезают через 10 секунд. Без следов.</p>
-                        
-                        <div class="mt-auto flex items-center justify-center py-8">
-                            <div class="px-6 py-3 rounded-full border border-dashed border-white/20 text-zinc-400 flex items-center gap-2 text-sm font-medium animate-pulse">
-                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                                00:08 до удаления
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Card 3: Polls (Full) -->
-                <div class="bento-card md:col-span-12 bg-surface border border-white/5 rounded-3xl p-10 flex flex-col md:flex-row items-center gap-10 relative overflow-hidden transition-all duration-500 hover:-translate-y-1 hover:border-white/10 hover:shadow-2xl reveal group">
-                    <div class="relative z-10 flex-1 w-full max-w-[400px]">
-                        <div class="w-14 h-14 rounded-2xl bg-elevated border border-white/10 flex items-center justify-center mb-6 text-blue-500 group-hover:scale-110 transition-transform">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
-                        </div>
-                        <h3 class="font-display font-bold text-2xl mb-3">Встроенные опросы</h3>
-                        <p class="text-zinc-400 text-lg">Принимайте решения вместе. Анимированные прогресс-бары, до 10 вариантов ответа.</p>
-                    </div>
-                    
-                    <div class="relative z-10 flex-1 w-full bg-elevated border border-white/10 rounded-2xl p-6">
-                        <div class="font-semibold mb-4 text-[15px]">Где проведем корпоратив?</div>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between text-sm mb-2">
-                                    <span>Ресторан</span> <span class="font-display font-bold">65%</span>
-                                </div>
-                                <div class="h-2 bg-surface rounded-full overflow-hidden">
-                                    <div class="h-full bg-accent observe-fill rounded-full" data-width="65%" style="width: 0%; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1);"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between text-sm mb-2 text-zinc-400">
-                                    <span>Выезд на природу</span> <span class="font-display font-bold">35%</span>
-                                </div>
-                                <div class="h-2 bg-surface rounded-full overflow-hidden">
-                                    <div class="h-full bg-white/10 observe-fill rounded-full" data-width="35%" style="width: 0%; transition: width 1.5s cubic-bezier(0.25, 1, 0.5, 1) 0.2s;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="bento-card">
+                <div class="bento-icon text-red"><i data-lucide="clock"></i></div>
+                <h3>Секретные сообщения</h3>
+                <p>Отправляйте сообщения, которые автоматически исчезнут через 10 секунд после прочтения.</p>
+            </div>
 
+            <div class="bento-card">
+                <div class="bento-icon text-blue"><i data-lucide="users"></i></div>
+                <h3>Групповые чаты</h3>
+                <p>Создавайте пространства для друзей и коллег, управляйте участниками и делитесь файлами.</p>
+            </div>
+
+            <div class="bento-card col-span-2">
+                <div class="bento-icon text-yellow"><i data-lucide="award"></i></div>
+                <h3>Система достижений</h3>
+                <p>Получайте уникальные бейджи за активность. Спонсоры и Premium пользователи получают эксклюзивные стили профиля.</p>
             </div>
         </div>
     </section>
 
-    <!-- FOOTER CTA -->
-    <section class="py-40 text-center border-t border-white/5 relative overflow-hidden">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-accent/10 blur-[120px] rounded-full pointer-events-none"></div>
-        <div class="max-w-[1200px] mx-auto px-6 relative z-10 reveal">
-            <h2 class="font-display font-bold text-[clamp(2.5rem,6vw,5rem)] tracking-tight mb-8 text-gradient">Присоединяйтесь.</h2>
-            <a href="https://loomy-5kmu.onrender.com" class="inline-flex bg-accent hover:bg-accent-hover text-white px-8 py-4 rounded-full font-display font-semibold text-lg items-center gap-3 transition-all hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(124,58,237,0.4)] shadow-[0_0_0_1px_rgba(255,255,255,0.1)_inset]" target="_blank">
-                Открыть приложение
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-            
-            <div class="mt-32 pt-8 border-t border-white/5 flex justify-between items-center text-sm text-zinc-500">
-                <p>© 2026 Loomy. Все права защищены.</p>
-                <a href="https://github.com/mossadbb/Loomy" target="_blank" class="hover:text-white transition-colors">GitHub</a>
-            </div>
-        </div>
-    </section>
+    <footer class="footer">
+        <p>&copy; 2026 Loomy. Все права защищены.</p>
+    </footer>
 
     <script>
-        // Navbar Scrolled State
-        const nav = document.getElementById('navbar');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 20) {
-                nav.classList.add('bg-deep/80', 'backdrop-blur-xl', 'border-b', 'border-white/5', 'py-4');
-                nav.classList.remove('py-6');
-            } else {
-                nav.classList.remove('bg-deep/80', 'backdrop-blur-xl', 'border-b', 'border-white/5', 'py-4');
-                nav.classList.add('py-6');
-            }
-        });
-
-        // Hover effect for bento cards (radial gradient tracking mouse)
-        document.querySelectorAll('.bento-card').forEach(card => {
-            card.addEventListener('mousemove', e => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                const y = e.clientY - rect.top;
-                card.style.setProperty('--mouse-x', `${x}px`);
-                card.style.setProperty('--mouse-y', `${y}px`);
-            });
-        });
-
-        // Intersection Observer for Reveal Animations
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: "0px 0px -50px 0px"
-        };
-
+        lucide.createIcons();
+        
+        // Scroll reveal animation
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('active');
-                    
-                    // Trigger poll bar animation if it's inside this element
-                    const pollBars = entry.target.querySelectorAll('.observe-fill');
-                    pollBars.forEach(bar => {
-                        setTimeout(() => {
-                            bar.style.width = bar.getAttribute('data-width');
-                        }, 500); 
-                    });
-                    
-                    observer.unobserve(entry.target);
+                    entry.target.classList.add('visible');
                 }
             });
-        }, observerOptions);
+        }, { threshold: 0.1 });
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+        document.querySelectorAll('.bento-card, .hero, .section-title').forEach((el) => {
+            el.classList.add('fade-up');
+            observer.observe(el);
+        });
     </script>
 </body>
 </html>
