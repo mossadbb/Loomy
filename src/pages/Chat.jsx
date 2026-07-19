@@ -557,10 +557,10 @@ const Chat = () => {
 
       {showProfileModal && profileView && (
         <div className="modal-overlay" onClick={() => setShowProfileModal(false)}>
-          <div className="profile-modal glass-panel" onClick={e => e.stopPropagation()}>
+          <div className="profile-modal" onClick={e => e.stopPropagation()}>
             
             <div className={`profile-banner ${hasPremium(profileView) ? 'premium-banner' : ''}`}>
-              <button className="close-btn" onClick={() => setShowProfileModal(false)}><X size={24} /></button>
+              <button className="close-btn" onClick={() => setShowProfileModal(false)}><X size={20} /></button>
             </div>
             
             <div className="profile-avatar-wrapper">
@@ -569,68 +569,95 @@ const Chat = () => {
               </div>
             </div>
             
-            <div className="profile-content-scroll">
-            {profileView.id === user.id ? (
-              <div className="profile-edit">
-                <h2 style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>
-                  {user.name} 
-                  {hasPremium(user) && <Gem size={20} style={{color: '#a855f7'}} title="Loomy Premium" />}
-                  {user.username.toLowerCase() === 'zell' && <span className="admin-badge" style={{display: 'flex', alignItems: 'center'}}><Crown size={14} style={{marginRight: '4px'}} /> STAFF</span>}
-                </h2>
-                <div className="form-group">
-                  <label>Юзернейм (только чтение)</label>
-                  <input type="text" value={`@${user.username}`} disabled />
-                </div>
-                <div className="form-group">
-                  <label>Имя</label>
-                  <input type="text" value={editName} onChange={e => setEditName(e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label>О себе (Bio)</label>
-                  <textarea value={editBio} onChange={e => setEditBio(e.target.value)} rows="3" />
-                </div>
-                <div className="achievements-section">
-                  <h4>Достижения</h4>
-                  <div className="achievements-list">
-                    {renderAchievements(user.achievements)}
-                  </div>
-                </div>
-                <button onClick={saveProfile} className="btn-primary">Сохранить</button>
-              </div>
-            ) : (
-              <div className="profile-view">
-                <h2 style={{display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px'}}>
-                  {profileView.id === 0 && <CheckCircle size={20} className="verified-badge" />}
-                  {profileView.name}
-                  {hasPremium(profileView) && <Gem size={20} style={{color: '#a855f7'}} title="Loomy Premium" />}
-                  {profileView.username.toLowerCase() === 'zell' && <span className="admin-badge" style={{display: 'flex', alignItems: 'center'}}><Crown size={14} style={{marginRight: '4px'}} /> STAFF</span>}
-                </h2>
-                <span className="profile-username">@{profileView.username}</span>
-                <div className="profile-bio">
-                  <h4>О себе</h4>
-                  <p className={hasPremium(profileView) ? "premium-bio" : ""}>
-                    {profileView.bio || 'Нет информации'}
-                  </p>
-                </div>
-                <div className="achievements-section">
-                  <h4>Достижения</h4>
-                  <div className="achievements-list">
-                    {renderAchievements(profileView.achievements)}
-                  </div>
-                </div>
-                
-                {user.username.toLowerCase() === 'zell' && profileView.id !== 0 && (
-                  <div className="admin-actions" style={{marginTop: '24px', borderTop: '1px solid var(--border-color)', paddingTop: '16px', width: '100%'}}>
-                    <h4 style={{textAlign: 'left', marginBottom: '8px', color: '#ef4444'}}>Панель администратора</h4>
-                    <div style={{display: 'flex', gap: '8px', flexWrap: 'wrap'}}>
-                      <button className="btn-secondary" onClick={() => handleGrantAchievement('sponsor')} style={{fontSize: '0.8rem', padding: '6px 12px'}}>Выдать Спонсора</button>
-                      <button className="btn-secondary" onClick={() => handleGrantAchievement('premium')} style={{fontSize: '0.8rem', padding: '6px 12px'}}>Выдать Premium</button>
-                      <button className="btn-secondary" onClick={() => handleGrantAchievement('staff')} style={{fontSize: '0.8rem', padding: '6px 12px'}}>Выдать Staff</button>
+            <div className="profile-content-container">
+              <div className="profile-inner-card">
+              {profileView.id === user.id ? (
+                <div className="profile-edit-form">
+                  <div className="profile-username-section" style={{borderBottom: 'none'}}>
+                    <div>
+                      <h2 className="profile-username">
+                        {user.name} 
+                        {hasPremium(user) && <Gem size={20} style={{color: '#a855f7'}} title="Loomy Premium" />}
+                      </h2>
+                      <span className="profile-handle">@{user.username}</span>
                     </div>
                   </div>
-                )}
+                  
+                  <div className="form-group">
+                    <label>Имя</label>
+                    <input type="text" value={editName} onChange={e => setEditName(e.target.value)} />
+                  </div>
+                  <div className="form-group">
+                    <label>О себе</label>
+                    <textarea value={editBio} onChange={e => setEditBio(e.target.value)} rows="3" />
+                  </div>
+                  
+                  <div className="achievements-section">
+                    <h4 className="section-title">Значки профиля</h4>
+                    <div className="achievements-list">
+                      {renderAchievements(user.achievements)}
+                      {user.username.toLowerCase() === 'zell' && <div className="achievement" style={{background: '#da373c', color: '#fff'}}><Crown size={16}/> Staff</div>}
+                    </div>
+                  </div>
+                  
+                  <div className="profile-actions">
+                    <button onClick={saveProfile} className="discord-btn" style={{flex: 1}}>Сохранить изменения</button>
+                    <button onClick={handleLogout} className="discord-btn danger" title="Выйти"><LogOut size={18} /></button>
+                  </div>
+                </div>
+              ) : (
+                <div className="profile-view">
+                  <div className="profile-username-section">
+                    <div>
+                      <h2 className="profile-username">
+                        {profileView.id === 0 && <CheckCircle size={20} style={{color: '#fff'}} />}
+                        {profileView.name}
+                      </h2>
+                      <span className="profile-handle">@{profileView.username}</span>
+                    </div>
+                    
+                    <div className="badges-container">
+                      {hasPremium(profileView) && <div className="badge-icon" title="Loomy Premium"><Gem size={18} style={{color: '#a855f7'}}/></div>}
+                      {profileView.username.toLowerCase() === 'zell' && <div className="badge-icon" title="Staff"><Crown size={18} style={{color: '#da373c'}}/></div>}
+                      {profileView.id === 0 && <div className="badge-icon" title="System"><ShieldCheck size={18} style={{color: '#3ba55e'}}/></div>}
+                    </div>
+                  </div>
+                  
+                  <div className="profile-bio">
+                    <h4 className="section-title">Обо мне</h4>
+                    <p className={hasPremium(profileView) ? "premium-bio" : ""}>
+                      {profileView.bio || 'Этот пользователь пока ничего не написал о себе.'}
+                    </p>
+                  </div>
+                  
+                  <div className="achievements-section">
+                    <h4 className="section-title">Роли и достижения</h4>
+                    <div className="achievements-list">
+                      {renderAchievements(profileView.achievements)}
+                    </div>
+                  </div>
+                  
+                  <div className="profile-actions">
+                    <button className="discord-btn" style={{flex: 1}} onClick={() => { setActiveContact(profileView); setShowProfileModal(false); }}>
+                      <MessageCircle size={18} /> Написать сообщение
+                    </button>
+                    <button className="discord-btn secondary" title="Добавить в друзья (Скоро)">
+                      <Users size={18} />
+                    </button>
+                  </div>
+                  
+                  {user.username.toLowerCase() === 'zell' && profileView.id !== 0 && (
+                    <div className="admin-actions">
+                      <h4 className="section-title" style={{color: '#da373c'}}>Панель администратора</h4>
+                      <div className="profile-actions">
+                        <button className="discord-btn secondary" onClick={() => handleGrantAchievement('sponsor')}>Спонсор</button>
+                        <button className="discord-btn secondary" onClick={() => handleGrantAchievement('premium')}>Premium</button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
               </div>
-            )}
             </div>
           </div>
         </div>

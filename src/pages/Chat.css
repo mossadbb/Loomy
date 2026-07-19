@@ -299,8 +299,8 @@
 }
 
 .send-btn {
-  background: var(--color-text-primary);
-  color: var(--color-bg-base);
+  background: #5865F2;
+  color: #ffffff;
   width: 44px;
   height: 44px;
   border-radius: var(--radius-md);
@@ -308,145 +308,179 @@
   align-items: center;
   justify-content: center;
   transition: var(--transition-fast);
-  border: 1px solid var(--color-text-primary);
+  border: none;
 }
 
 .send-btn:not(:disabled):hover {
-  background: transparent;
-  color: var(--color-text-primary);
+  background: #4752C4;
+  color: #ffffff;
 }
 
 .send-btn:disabled {
-  background: var(--color-hover-bg);
+  background: #2b2d31;
   color: var(--color-text-secondary);
-  border-color: var(--border-color);
   cursor: not-allowed;
 }
 
-/* Modals */
+/* Profile Modal - Discord Style */
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.7);
   z-index: 100;
   display: flex;
   align-items: center;
   justify-content: center;
+  backdrop-filter: blur(2px);
 }
 
 .profile-modal {
   width: 100%;
-  max-width: 400px;
-  background: var(--color-bg-base);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  max-width: 600px;
+  background: #2b2d31;
+  border-radius: 8px;
   overflow: hidden;
   position: relative;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  border: none;
 }
 
 .profile-banner {
-  height: 100px;
-  background: var(--color-input-bg);
-  border-bottom: 1px solid var(--border-color);
+  height: 120px;
+  background: var(--color-brand, #5865F2);
+  position: relative;
 }
 
 .premium-banner {
-  background: repeating-linear-gradient(45deg, var(--color-hover-bg), var(--color-hover-bg) 10px, var(--color-bg-base) 10px, var(--color-bg-base) 20px);
+  background: linear-gradient(135deg, #5865F2, #a855f7, #ec4899);
 }
 
 .close-btn {
   position: absolute;
   top: 12px;
   right: 12px;
-  background: var(--color-bg-base);
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
+  background: rgba(0,0,0,0.4);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-primary);
+  color: #fff;
   cursor: pointer;
   z-index: 10;
+  transition: background 0.2s;
 }
 
 .close-btn:hover {
-  background: var(--color-hover-bg);
+  background: rgba(0,0,0,0.7);
 }
 
 .profile-avatar-wrapper {
-  margin-top: -40px;
-  display: flex;
-  padding-left: 24px;
+  position: absolute;
+  top: 76px;
+  left: 16px;
+  z-index: 2;
 }
 
 .profile-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: var(--radius-md);
-  background: var(--color-text-primary);
-  color: var(--color-bg-base);
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  background: #1e1f22;
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 4px solid var(--color-bg-base);
-  font-size: 2rem;
+  border: 6px solid #2b2d31;
+  font-size: 2.5rem;
   font-weight: 600;
 }
 
 .premium-avatar-glow {
-  border-color: var(--color-text-secondary);
+  border-color: #2b2d31;
+  box-shadow: 0 0 0 2px #a855f7;
 }
 
-.profile-content-scroll {
-  padding: 16px 24px 24px;
-  max-height: 60vh;
-  overflow-y: auto;
+.profile-content-container {
+  padding: 64px 16px 16px 16px;
+  background: #2b2d31;
+}
+
+.profile-inner-card {
+  background: #111214;
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.profile-username-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding-bottom: 12px;
 }
 
 .profile-username {
-  color: var(--color-text-primary);
+  color: #f2f3f5;
   font-size: 1.25rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   gap: 8px;
+  margin-bottom: 4px;
 }
 
 .profile-handle {
-  color: var(--color-text-secondary);
-  font-size: 0.85rem;
-  margin-bottom: 16px;
-  display: block;
+  color: #b5bac1;
+  font-size: 0.9rem;
+}
+
+.badges-container {
+  display: flex;
+  gap: 4px;
+  background: #2b2d31;
+  padding: 4px;
+  border-radius: 6px;
+}
+
+.badge-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.section-title {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #b5bac1;
+  font-weight: 700;
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
 }
 
 .profile-bio {
-  background: var(--color-input-bg);
-  padding: 16px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--border-color);
   margin-bottom: 20px;
 }
 
-.profile-bio h4 {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-  margin-bottom: 8px;
-  letter-spacing: 0.05em;
+.profile-bio p {
+  color: #dbdee1;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  white-space: pre-wrap;
 }
 
 .premium-bio {
-  font-weight: 500;
+  color: #f2f3f5 !important;
 }
 
-.achievements-section h4 {
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  color: var(--color-text-secondary);
-  margin-bottom: 8px;
-  letter-spacing: 0.05em;
+.achievements-section {
+  margin-bottom: 20px;
 }
 
 .achievements-list {
@@ -459,52 +493,92 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  background: var(--color-bg-base);
-  border: 1px solid var(--border-color);
-  padding: 6px 12px;
-  border-radius: var(--radius-md);
+  background: #2b2d31;
+  padding: 6px 10px;
+  border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 500;
+  color: #dbdee1;
 }
 
-.profile-edit .form-group {
-  margin-bottom: 16px;
+/* Edit Mode styling */
+.profile-edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.profile-edit .form-group input,
-.profile-edit .form-group textarea {
+.profile-edit-form .form-group label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: #b5bac1;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.profile-edit-form input,
+.profile-edit-form textarea {
   width: 100%;
-  background: var(--color-bg-base);
-  border: 1px solid var(--border-color);
-  padding: 12px;
-  border-radius: var(--radius-md);
-  color: var(--color-text-primary);
-  margin-top: 4px;
-  font-family: var(--font-family);
+  background: #1e1f22;
+  border: none;
+  padding: 10px;
+  border-radius: 4px;
+  color: #dbdee1;
+  font-family: inherit;
   font-size: 0.9rem;
+  transition: background 0.2s;
 }
 
-.profile-edit .form-group input:focus,
-.profile-edit .form-group textarea:focus {
-  border-color: var(--color-text-primary);
+.profile-edit-form input:focus,
+.profile-edit-form textarea:focus {
+  background: #2b2d31;
   outline: none;
 }
 
-.save-btn {
-  width: 100%;
-  padding: 12px;
-  background: var(--color-text-primary);
-  color: var(--color-bg-base);
-  border: 1px solid var(--color-text-primary);
-  border-radius: var(--radius-md);
-  font-weight: 500;
-  cursor: pointer;
-  margin-top: 8px;
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-.save-btn:hover {
-  background: transparent;
-  color: var(--color-text-primary);
+.discord-btn {
+  background: #5865F2;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.discord-btn:hover {
+  background: #4752C4;
+}
+
+.discord-btn.danger {
+  background: #da373c;
+}
+.discord-btn.danger:hover {
+  background: #a12828;
+}
+
+.discord-btn.secondary {
+  background: #4e5058;
+}
+.discord-btn.secondary:hover {
+  background: #6d6f78;
+}
+
+.admin-actions {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.06);
 }
 
 .empty-chat {
